@@ -1,7 +1,8 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.ops.rnn_cell import *
-from tensorflow.python.ops.rnn_cell_impl import _Linear
+# from tensorflow.python.ops.rnn_cell_impl import _Linear
+from tensorflow.contrib.rnn.python.ops.rnn_cell import _Linear
 from tensorflow import keras
 from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import init_ops
@@ -604,6 +605,59 @@ def attention_FCN(query, facts, attention_size, mask, stag='null', mode='SUM', s
         return output, scores
     return output
 
+# ///////////////////////////////////////////////
+
+
+def attention_FCN2(query, facts, attention_size, mask, stag='null', mode='SUM', softmax_stag=1, time_major=False, return_alphas=False, forCnn=False, scope=""):
+    if isinstance(facts, tuple):
+        facts = tf.concat(facts, 2)
+    if len(facts.get_shape().as_list()) == 2:
+        facts = tf.expand_dims(facts, 1)
+
+    if time_major:
+        # (T,B,D) => (B,T,D)
+        facts = tf.array_ops.transpose(facts, [1, 0, 2])
+    # Trainable parameters
+    mask = tf.equal(mask, tf.ones_like(mask))
+    # D value - hidden size of the RNN layer
+    facts_size = facts.get_shape().as_list()[-1]
+    querry_size = query.get_shape().as_list()[-1]
+    query = tf.layers.dense(
+        query, facts_size, activation=None, name='f12' + stag)
+    query = prelu2(query, scope=scope)
+    queries = tf.tile(query, [1, tf.shape(facts)[1]])
+    queries = tf.reshape(queries, tf.shape(facts))
+    din_all = tf.concat(
+        [queries, facts, queries-facts, queries*facts], axis=-1)
+    d_layer_1_all = tf.layers.dense(
+        din_all, 80, activation=tf.nn.sigmoid, name='f12_att' + stag)
+    d_layer_2_all = tf.layers.dense(
+        d_layer_1_all, 40, activation=tf.nn.sigmoid, name='f22_att' + stag)
+    d_layer_3_all = tf.layers.dense(
+        d_layer_2_all, 1, activation=None, name='f32_att' + stag)
+    d_layer_3_all = tf.reshape(d_layer_3_all, [-1, 1, tf.shape(facts)[1]])
+    scores = d_layer_3_all
+
+    # Mask
+    key_masks = tf.expand_dims(mask, 1)  # [B, 1, T]
+    paddings = tf.ones_like(scores) * (-2 ** 32 + 1)
+    if not forCnn:
+        scores = tf.where(key_masks, scores, paddings)  # [B, 1, T]
+
+    # Activation
+    if softmax_stag:
+        scores = tf.nn.softmax(scores)  # [B, 1, T]
+
+    # Weighted sum
+    if mode == 'SUM':
+        output = tf.matmul(scores, facts)  # [B, 1, H]
+    else:
+        scores = tf.reshape(scores, [-1, tf.shape(facts)[1]])
+        output = facts * tf.expand_dims(scores, -1)
+        output = tf.reshape(output, tf.shape(facts))
+    if return_alphas:
+        return output, scores
+    return output
 
 def dice(_x, axis=-1, epsilon=0.000000001, name=''):
     with tf.variable_scope(name, reuse=tf.AUTO_REUSE):
@@ -633,6 +687,12 @@ def prelu(_x, scope=''):
         _alpha = tf.get_variable("prelu_"+scope, shape=_x.get_shape()[-1],
                                  dtype=_x.dtype, initializer=tf.constant_initializer(0.1))
         return tf.maximum(0.0, _x) + _alpha * tf.minimum(0.0, _x)
+
+def prelu2(_x, scope=''):
+    with tf.variable_scope(name_or_scope=scope, default_name="prelu2"):
+        _alpha = tf.get_variable("prelu2_"+scope, shape=_x.get_shape()[-1],
+                                 dtype=_x.dtype, initializer=tf.constant_initializer(0.1))
+        return tf.maximum(0.0, _x) + _alpha * tf.minimum(0.0, _x)        
 
 
 def calc_auc(raw_arr):
