@@ -65,7 +65,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                 if (itr % TEST_FREQ) == 0:
                     train_loss_list.append(train_loss_sum / TEST_FREQ)
                     train_accuracy_list.append(train_accuracy_sum / TEST_FREQ)
-                    with open('/content/sli_rec/information.txt', 'a') as writefile:
+                    with open('/content/fair2013/sli_rec/information.txt', 'a') as writefile:
                         writefile.write("Iter: {0}, training loss = {1}, training accuracy = {2}\n".format(
                             itr, train_loss_sum / TEST_FREQ, train_accuracy_sum / TEST_FREQ))
                     print("Iter: {0}, training loss = {1}, training accuracy = {2}".format(
