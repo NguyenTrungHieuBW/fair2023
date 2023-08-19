@@ -98,7 +98,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                         writefile.write(",".join(str(item)
                                         for item in test_accuracy_list) + "\n")
 
-                    with open('/content/sli_rec/information.txt', 'a') as writefile:
+                    with open('/content/fair2013/sli_rec/information.txt', 'a') as writefile:
                         writefile.write("test_auc: {0}, testing loss = {1}, testing accuracy = {2}\n".format(
                             test_auc, test_loss, test_acc))
                     print("test_auc: {0}, testing loss = {1}, testing accuracy = {2}".format(
@@ -107,7 +107,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                     if test_auc > best_auc:
                         best_auc = test_auc
                         model.save(sess, best_model_path)
-                        with open('/content/sli_rec/information.txt', 'a') as writefile:
+                        with open('/content/fair2013/sli_rec/information.txt', 'a') as writefile:
                             writefile.write(
                                 "Model saved in {0}\n".format(best_model_path))
                         print("Model saved in {0}".format(best_model_path))
