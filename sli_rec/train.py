@@ -27,6 +27,8 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
     np.random.seed(seed)
     random.seed(seed)
 
+    train_file
+    
     with tf.Session() as sess:
         if model_type in MODEL_DICT:
             # set current model = Model_SLi_Rec_Adaptive
@@ -34,9 +36,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
         else:  # neu model k dc support thi tra ve error
             print("{0} is not implemented".format(model_type))
             return
-        print("Check 000000000000000\n\n")
         train_data, test_data = Iterator(train_file), Iterator(test_file)
-        print("Check 123123123123123123\n\n")
         # print(train_file)
         # so luong user, so luong item, so luong category
         user_number, item_number, cate_number = train_data.get_id_numbers()
@@ -65,7 +65,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                 if (itr % TEST_FREQ) == 0:
                     train_loss_list.append(train_loss_sum / TEST_FREQ)
                     train_accuracy_list.append(train_accuracy_sum / TEST_FREQ)
-                    with open('/content/fair2013/sli_rec/information.txt', 'a') as writefile:
+                    with open('/content/fair2023/sli_rec/information.txt', 'a') as writefile:
                         writefile.write("Iter: {0}, training loss = {1}, training accuracy = {2}\n".format(
                             itr, train_loss_sum / TEST_FREQ, train_accuracy_sum / TEST_FREQ))
                     print("Iter: {0}, training loss = {1}, training accuracy = {2}".format(
@@ -98,7 +98,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                         writefile.write(",".join(str(item)
                                         for item in test_accuracy_list) + "\n")
 
-                    with open('/content/fair2013/sli_rec/information.txt', 'a') as writefile:
+                    with open('/content/fair2023/sli_rec/information.txt', 'a') as writefile:
                         writefile.write("test_auc: {0}, testing loss = {1}, testing accuracy = {2}\n".format(
                             test_auc, test_loss, test_acc))
                     print("test_auc: {0}, testing loss = {1}, testing accuracy = {2}".format(
@@ -107,7 +107,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                     if test_auc > best_auc:
                         best_auc = test_auc
                         model.save(sess, best_model_path)
-                        with open('/content/fair2013/sli_rec/information.txt', 'a') as writefile:
+                        with open('/content/fair2023/sli_rec/information.txt', 'a') as writefile:
                             writefile.write(
                                 "Model saved in {0}\n".format(best_model_path))
                         print("Model saved in {0}".format(best_model_path))
