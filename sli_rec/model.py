@@ -529,19 +529,37 @@ class Model_SLi_Rec_Adaptive(Model):
 
         # Adding a CNN layer
         with tf.name_scope('CNN_layer'):
-            # Reshape the input for CNN
-            cnn_input = tf.expand_dims(self.item_history_embedding, -1)
-            print("Shape of item_history_embedding:", tf.shape(self.item_history_embedding))
-            print("Shape of cnn_input:", tf.shape(cnn_input))
-            
-            #Check CNN_input shape
-            with open('/content/fair2023/sli_rec/cnn.txt', 'w') as writefile:
-                # Write the data to the file
-                writefile.write(str(self.item_history_embedding[0]))
             '''
             #Padding CNN input
             for i in range(len(cnn_input),0,-1):            
             '''
+            #Load padding location
+            import csv
+            pading_location=[]
+            with open("/content/fair2023/sli_rec/sli_rec/padding_location.csv", 'r') as file:
+              csvreader = csv.reader(file)
+              for row in csvreader:
+                pading_location.append(row)
+            pading_location[0]  
+            
+            #Padding
+            padding_array=[]
+            for i in range(len(self.item_history_embedding)[0]-1,-1,-1):
+                if(i in pading_location):
+                    padding_array.append(tf.zeros(shape=(len(self.item_history_embedding)[0], len(self.item_history_embedding)[2], 36)))
+                    #padding_array.append(tf.zeros(shape=(1, 36)))
+                padding_array.append(self.item_history_embedding[i])            
+                padded_item_history_embedding=tf.stack(padding_array,0)
+                
+            #self.item_history_embedding.get_shape()[0]
+            # Reshape the input for CNN
+            cnn_input = tf.expand_dims(padded_item_history_embedding, -1)
+            
+            #Check CNN_input shape
+            with open('/content/fair2023/sli_rec/cnn.txt', 'w') as writefile:
+                # Write the data to the file
+                writefile.write(str(tf.shape(cnn_input)))
+
             
             # Define the CNN layer
             num_filters = 64
@@ -550,6 +568,7 @@ class Model_SLi_Rec_Adaptive(Model):
             cnn_output1 = tf.layers.conv2d(cnn_input, filters=num_filters, kernel_size=(filter_size, EMBEDDING_DIM),
                                           strides=(stride, stride), padding='same', activation=tf.nn.relu, name='conv_layer1')
 
+            
 
             # Max-pooling over the outputs
             pooled_output1 = tf.reduce_max(cnn_output1, axis=1, keep_dims=True)
