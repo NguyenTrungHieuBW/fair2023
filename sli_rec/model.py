@@ -546,7 +546,7 @@ class Model_SLi_Rec_Adaptive(Model):
             padding_array=[]
             for i in range(self.item_history_embedding.get_shape()[0]-1,-1,-1):
                 if(i in pading_location):
-                    padding_array.append(tf.zeros(shape=(self.item_history_embedding.get_shape()[0], self.item_history_embedding.get_shape()[0], 36)))
+                    padding_array.append(tf.zeros(shape=(self.item_history_embedding.get_shape()[0], self.item_history_embedding.get_shape()[1], 36)))
                     #padding_array.append(tf.zeros(shape=(1, 36)))
                 padding_array.append(self.item_history_embedding[i])            
                 padded_item_history_embedding=tf.stack(padding_array,0)
