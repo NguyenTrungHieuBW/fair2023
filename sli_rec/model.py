@@ -537,7 +537,7 @@ class Model_SLi_Rec_Adaptive(Model):
             #Check CNN_input shape
             with open('/content/fair2023/sli_rec/cnn.txt', 'w') as writefile:
                 # Write the data to the file
-                writefile.write(str(self.item_history_embedding))
+                writefile.write(str(self.item_history_embedding[0]))
             '''
             #Padding CNN input
             for i in range(len(cnn_input),0,-1):            
