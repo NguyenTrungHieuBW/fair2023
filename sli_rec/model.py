@@ -536,7 +536,7 @@ class Model_SLi_Rec_Adaptive(Model):
             #Load padding location
             import csv
             pading_location=[]
-            with open("/content/fair2023/sli_rec/sli_rec/padding_location.csv", 'r') as file:
+            with open("/content/fair2023/sli_rec/train_padding_location.csv", 'r') as file:
               csvreader = csv.reader(file)
               for row in csvreader:
                 pading_location.append(row)
