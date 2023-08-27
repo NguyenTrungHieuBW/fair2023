@@ -531,8 +531,10 @@ class Model_SLi_Rec_Adaptive(Model):
         with tf.name_scope('CNN_layer'):
             # Reshape the input for CNN
             cnn_input = tf.expand_dims(self.item_history_embedding, -1)
-            # print("Shape of item_history_embedding:", tf.shape(self.item_history_embedding))
-            # print("Shape of cnn_input:", tf.shape(cnn_input))
+            print("Shape of item_history_embedding:", tf.shape(self.item_history_embedding))
+            print("Shape of cnn_input:", tf.shape(cnn_input))
+
+            
 
             # Define the CNN layer
             num_filters = 64
