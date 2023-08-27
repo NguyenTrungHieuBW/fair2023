@@ -542,51 +542,25 @@ class Model_SLi_Rec_Adaptive(Model):
                 pading_location.append(row)
             pading_location[0]  
             
-            #Padding
-            padding_array=[]
-            for i in range(self.item_history_embedding.get_shape()[0]-1,-1,-1):
-                if(i in pading_location):
-                    padding_array.append(tf.zeros(shape=(self.item_history_embedding.get_shape()[0], self.item_history_embedding.get_shape()[1], 36)))
-                    #padding_array.append(tf.zeros(shape=(1, 36)))
-                padding_array.append(self.item_history_embedding[i])            
-                padded_item_history_embedding=tf.stack(padding_array,0)
-                
-            #self.item_history_embedding.get_shape()[0]
-            # Reshape the input for CNN
-            cnn_input = tf.expand_dims(padded_item_history_embedding, -1)
-            
-            #Check CNN_input shape
-            with open('/content/fair2023/sli_rec/cnn.txt', 'w') as writefile:
-                # Write the data to the file
-                writefile.write(str(tf.shape(cnn_input)))
-
-            
             # Define the CNN layer
             num_filters = 64
             filter_size = 3
             stride = 1
-            cnn_output1 = tf.layers.conv2d(cnn_input, filters=num_filters, kernel_size=(filter_size, EMBEDDING_DIM),
+            #Input
+            pooled_output = []
+            for i in range(len(pading_location[0])-1):
+                sliced_input = tf.slice(self.item_history_embedding, pading_location[0][i], pading_location[0][i+1]-pading_location[0][i], name=None)
+                cnn_input = tf.expand_dims(sliced_input, -1)
+                sliced_cnn_output = tf.layers.conv2d(cnn_input, filters=num_filters, kernel_size=(filter_size, EMBEDDING_DIM),
                                           strides=(stride, stride), padding='same', activation=tf.nn.relu, name='conv_layer1')
-
-            
-
-            # Max-pooling over the outputs
-            pooled_output1 = tf.reduce_max(cnn_output1, axis=1, keep_dims=True)
-
-            cnn_output2 = tf.layers.conv2d(pooled_output1, filters=num_filters*2, kernel_size=(filter_size, EMBEDDING_DIM),
-                                          strides=(stride, stride), padding='same', activation=tf.nn.relu, name='conv_layer2')
-
-            # Max-pooling over the outputs
-            pooled_output2 = tf.reduce_max(cnn_output2, axis=1, keep_dims=True)
-
-            cnn_output3 = tf.layers.conv2d(pooled_output2, filters=num_filters*2, kernel_size=(filter_size, EMBEDDING_DIM),
-                                          strides=(stride, stride), padding='same', activation=tf.nn.relu, name='conv_layer3')
-
-            # Max-pooling over the outputs
-            pooled_output3 = tf.reduce_max(cnn_output3, axis=1, keep_dims=True)
+                # Max-pooling over the outputs
+                sliced_pooled_output = tf.reduce_max(cnn_output1, axis=1, keep_dims=True)
+                pooled_output.append(sliced_pooled_output)
+                
+            pooled_output_last = tf.stack(pooled_output,0)
 
             # Flatten the pooled output
-            cnn_features = tf.layers.flatten(pooled_output3)
+            cnn_features = tf.layers.flatten(pooled_output_last)
             cnn_features = tf.layers.dense(
                 cnn_features, 72, activation=tf.nn.relu, name='cnn_features1')
             cnn_features = tf.layers.dense(
