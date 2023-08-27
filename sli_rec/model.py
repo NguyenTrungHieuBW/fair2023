@@ -549,7 +549,7 @@ class Model_SLi_Rec_Adaptive(Model):
             #Input
             pooled_output = []
             for i in range(len(pading_location[0])-1):
-                sliced_input = tf.slice(self.item_history_embedding, int(pading_location[0][i]), int(pading_location[0][i+1])-int(pading_location[0][i]), name=None)
+                sliced_input = tf.slice(self.item_history_embedding[0], int(pading_location[0][i]), int(pading_location[0][i+1])-int(pading_location[0][i]), name=None)
                 cnn_input = tf.expand_dims(sliced_input, -1)
                 sliced_cnn_output = tf.layers.conv2d(cnn_input, filters=num_filters, kernel_size=(filter_size, EMBEDDING_DIM),
                                           strides=(stride, stride), padding='same', activation=tf.nn.relu, name='conv_layer1')
