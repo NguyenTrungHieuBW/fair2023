@@ -533,9 +533,16 @@ class Model_SLi_Rec_Adaptive(Model):
             cnn_input = tf.expand_dims(self.item_history_embedding, -1)
             print("Shape of item_history_embedding:", tf.shape(self.item_history_embedding))
             print("Shape of cnn_input:", tf.shape(cnn_input))
-
             
-
+            #Check CNN_input shape
+            with open('/content/fair2023/sli_rec/cnn.txt', 'w') as writefile:
+                # Write the data to the file
+                writefile.write(cnn_input)
+            '''
+            #Padding CNN input
+            for i in range(len(cnn_input),0,-1):            
+            '''
+            
             # Define the CNN layer
             num_filters = 64
             filter_size = 3
