@@ -77,7 +77,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                     test_loss_list.append(test_loss)
                     test_accuracy_list.append(test_acc)
 
-                    with open('/content/sli_rec/result.txt', 'w') as writefile:
+                    with open('/content/fair2023/sli_rec/result.txt', 'w') as writefile:
                         # Write the data to the file
                         writefile.write(",".join(str(item)
                                         for item in train_loss_list) + "\n")
