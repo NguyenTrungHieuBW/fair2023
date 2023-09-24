@@ -12,7 +12,7 @@ LR = 1e-3
 EMBEDDING_DIM = 18  # dimension of embedding vector
 HIDDEN_SIZE = 36
 ATTENTION_SIZE = 36
-MODEL_TYPE = "ASVD"
+MODEL_TYPE = "LSTM"
 
 MODEL_DICT = {"ASVD": Model_ASVD, "DIN": Model_DIN, "LSTM": Model_LSTM, "LSTMPP": Model_LSTMPP, "NARM": Model_NARM, "CARNN": Model_CARNN,  # baselines
               "Time1LSTM": Model_Time1LSTM, "Time2LSTM": Model_Time2LSTM, "Time3LSTM": Model_Time3LSTM, "DIEN": Model_DIEN,
