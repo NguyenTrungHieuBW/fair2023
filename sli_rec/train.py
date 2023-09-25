@@ -5,6 +5,7 @@ from iterator import Iterator
 from model import *
 from utils import *
 import os
+import time
 SEED = 3
 MAX_EPOCH = 10
 TEST_FREQ = 1000
@@ -12,7 +13,7 @@ LR = 1e-3
 EMBEDDING_DIM = 18  # dimension of embedding vector
 HIDDEN_SIZE = 36
 ATTENTION_SIZE = 36
-MODEL_TYPE = "LSTM"
+MODEL_TYPE = "SLi_Rec_Adaptive"
 
 MODEL_DICT = {"ASVD": Model_ASVD, "DIN": Model_DIN, "LSTM": Model_LSTM, "LSTMPP": Model_LSTMPP, "NARM": Model_NARM, "CARNN": Model_CARNN,  # baselines
               "Time1LSTM": Model_Time1LSTM, "Time2LSTM": Model_Time2LSTM, "Time3LSTM": Model_Time3LSTM, "DIEN": Model_DIEN,
@@ -26,7 +27,10 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
     tf.set_random_seed(seed)  # dam bao moi lan random deu giong nhau
     np.random.seed(seed)
     random.seed(seed)
-
+    cur_time = time.time()
+    with open('/content/fair2023/sli_rec/time.txt', 'w') as writefile:
+        # Write the data to the file
+        writefile.write(str(cur_time))
     train_file
     
     with tf.Session() as sess:
@@ -62,6 +66,11 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                 train_loss_sum += train_loss
                 train_accuracy_sum += train_acc
                 itr += 1
+                if(itr%20==0):
+                    cur_time = time.time()
+                    with open('/content/fair2023/sli_rec/time.txt', 'w') as writefile:
+                        # Write the data to the file
+                        writefile.write(str(cur_time))
                 if (itr % TEST_FREQ) == 0:
                     train_loss_list.append(train_loss_sum / TEST_FREQ)
                     train_accuracy_list.append(train_accuracy_sum / TEST_FREQ)
