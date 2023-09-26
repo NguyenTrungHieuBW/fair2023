@@ -67,7 +67,7 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                 train_accuracy_sum += train_acc
                 itr += 1
                 cur_time = time.time()
-                with open('/content/fair2023/sli_rec/time.txt', 'w') as writefile:
+                with open('/content/fair2023/sli_rec/time.txt', 'a') as writefile:
                     # Write the data to the file
                     writefile.write(str(cur_time))
                 if (itr % TEST_FREQ) == 0:
