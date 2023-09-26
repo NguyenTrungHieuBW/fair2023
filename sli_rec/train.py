@@ -66,11 +66,12 @@ def train(train_file="data/train_data", test_file="data/test_data", save_path="s
                 train_loss_sum += train_loss
                 train_accuracy_sum += train_acc
                 itr += 1
-                cur_time = time.time()
-                with open('/content/fair2023/sli_rec/time.txt', 'a') as writefile:
-                    # Write the data to the file
-                    writefile.write(str(cur_time))
                 if (itr % TEST_FREQ) == 0:
+                    cur_time = time.time()
+                    with open('/content/fair2023/sli_rec/time.txt', 'a') as writefile:
+                        # Write the data to the file
+                        writefile.write("Iter: {0}, Time: {1}\n".format(
+                            itr, str(cur_time)))
                     train_loss_list.append(train_loss_sum / TEST_FREQ)
                     train_accuracy_list.append(train_accuracy_sum / TEST_FREQ)
                     with open('/content/fair2023/sli_rec/information.txt', 'a') as writefile:
