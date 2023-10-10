@@ -585,7 +585,7 @@ class Model_SLi_Rec_Adaptive(Model):
         # alpha
         with tf.name_scope('User_alpha'):
             # concat_all = tf.concat([self.target_item_embedding, att_fea1, att_fea2, tf.expand_dims(self.timenow_history[:,-1], -1)], 1)
-            concat_all = tf.concat([self.target_item_embedding, att_fea1, att_fea2, att_fea3, tf.expand_dims(
+            concat_all = tf.concat([self.target_item_embedding, att_fea1, att_fea2, cnn_features, tf.expand_dims(
                 self.timenow_history[:, -1], -1), cnn_features], 1)
             concat_att1 = tf.layers.dense(
                 concat_all, 80, activation=tf.nn.sigmoid, name='concat_att1')
@@ -600,7 +600,7 @@ class Model_SLi_Rec_Adaptive(Model):
 
             user_embed = att_fea1 * \
                 user_alpha[:, 0:1] + att_fea2 * \
-                user_alpha[:, 1:2] + att_fea3 * user_alpha[:, 2:3]
+                user_alpha[:, 1:2] + cnn_features * user_alpha[:, 2:3]
 
         last_inps = tf.concat([self.target_item_embedding, user_embed], 1)
         self.fcn_net(last_inps, use_dice=True)
